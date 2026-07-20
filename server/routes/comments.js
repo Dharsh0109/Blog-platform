@@ -6,7 +6,7 @@ const { protect } = require('../middleware/authMiddleware');
 const contentValidator = body('content')
   .trim()
   .notEmpty().withMessage('Comment cannot be empty')
-  .isLength({ max: 1000 }).withMessage('Comment max 1000 characters');
+  .isLength({ min: 1, max: 1000 }).withMessage('Comment must be 1–1000 characters');
 
 // Mounted at /api/posts/:postId/comments
 const postCommentsRouter = express.Router({ mergeParams: true });

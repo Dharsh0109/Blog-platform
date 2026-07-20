@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import PostForm from './PostForm';
 
@@ -11,7 +12,14 @@ export default function CreatePost() {
     setSubmitting(true);
     try {
       const { data: post } = await api.post('/posts', data);
+      toast.success('Post created!');
       navigate(`/posts/${post._id}`);
+    } catch (err) {
+      const msg = err.response?.data?.errors?.[0]?.msg
+               || err.response?.data?.message
+               || 'Failed to create post';
+      toast.error(msg);
+      throw err;
     } finally {
       setSubmitting(false);
     }

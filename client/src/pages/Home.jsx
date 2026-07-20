@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import PostCard from '../components/PostCard';
@@ -35,18 +36,19 @@ export default function Home() {
     try {
       await api.delete(`/posts/${id}`);
       setPosts((prev) => prev.filter((p) => p._id !== id));
+      toast.success('Post deleted');
     } catch {
-      alert('Failed to delete post.');
+      toast.error('Failed to delete post');
     }
   };
 
   const displayed = tab === 'mine'
-    ? posts.filter((p) => p.author?._id === user?.id || p.author?.username === user?.username)
+    ? posts.filter((p) => p.author?.username === user?.username)
     : posts;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Blog Posts</h1>
         {user && (
           <div className="flex gap-2 text-sm">
@@ -67,10 +69,7 @@ export default function Home() {
       </div>
 
       {loading && <Spinner />}
-
-      {error && (
-        <div className="text-center py-20 text-red-500">{error}</div>
-      )}
+      {error   && <div className="text-center py-20 text-red-500">{error}</div>}
 
       {!loading && !error && displayed.length === 0 && (
         <div className="text-center py-20 text-gray-400">No posts found.</div>

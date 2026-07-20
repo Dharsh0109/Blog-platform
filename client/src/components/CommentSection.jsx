@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -18,8 +19,9 @@ function CommentItem({ comment, currentUser, postAuthorUsername, onDelete, onUpd
       const { data } = await api.put(`/comments/${comment._id}`, { content: editContent });
       onUpdate(data);
       setEditing(false);
+      toast.success('Comment updated');
     } catch {
-      alert('Failed to update comment.');
+      toast.error('Failed to update comment');
     } finally {
       setSaving(false);
     }
@@ -87,7 +89,6 @@ export default function CommentSection({ postId, postAuthorUsername }) {
   const [loading,   setLoading]   = useState(true);
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [error,      setError]      = useState('');
 
   useEffect(() => {
     const fetch = async () => {
@@ -95,7 +96,7 @@ export default function CommentSection({ postId, postAuthorUsername }) {
         const { data } = await api.get(`/posts/${postId}/comments`);
         setComments(data);
       } catch {
-        setError('Failed to load comments.');
+        toast.error('Failed to load comments');
       } finally {
         setLoading(false);
       }
@@ -111,8 +112,9 @@ export default function CommentSection({ postId, postAuthorUsername }) {
       const { data } = await api.post(`/posts/${postId}/comments`, { content: newComment });
       setComments((prev) => [...prev, data]);
       setNewComment('');
+      toast.success('Comment posted');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to post comment.');
+      toast.error(err.response?.data?.message || 'Failed to post comment');
     } finally {
       setSubmitting(false);
     }
@@ -123,8 +125,9 @@ export default function CommentSection({ postId, postAuthorUsername }) {
     try {
       await api.delete(`/comments/${id}`);
       setComments((prev) => prev.filter((c) => c._id !== id));
+      toast.success('Comment deleted');
     } catch {
-      alert('Failed to delete comment.');
+      toast.error('Failed to delete comment');
     }
   };
 
@@ -148,7 +151,6 @@ export default function CommentSection({ postId, postAuthorUsername }) {
             rows={3}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
           />
-          {error && <p className="text-xs text-red-500">{error}</p>}
           <button
             type="submit" disabled={submitting || !newComment.trim()}
             className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"

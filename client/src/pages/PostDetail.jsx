@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import Spinner from '../components/Spinner';
@@ -31,9 +32,10 @@ export default function PostDetail() {
     if (!window.confirm('Delete this post?')) return;
     try {
       await api.delete(`/posts/${id}`);
+      toast.success('Post deleted');
       navigate('/');
     } catch {
-      alert('Failed to delete post.');
+      toast.error('Failed to delete post');
     }
   };
 
@@ -61,9 +63,7 @@ export default function PostDetail() {
         <span>{new Date(post.createdAt).toLocaleDateString()}</span>
       </div>
 
-      <div className="prose max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
-        {post.content}
-      </div>
+      <div className="text-gray-700 whitespace-pre-wrap leading-relaxed">{post.content}</div>
 
       {isAuthor && (
         <div className="flex gap-3 mt-10">

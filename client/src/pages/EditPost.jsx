@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import api from '../api/axios';
 import PostForm from './PostForm';
 import Spinner from '../components/Spinner';
@@ -10,7 +11,6 @@ export default function EditPost() {
   const [post,       setPost]       = useState(null);
   const [loading,    setLoading]    = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error,      setError]      = useState('');
 
   useEffect(() => {
     const fetch = async () => {
@@ -18,7 +18,8 @@ export default function EditPost() {
         const { data } = await api.get(`/posts/${id}`);
         setPost(data);
       } catch {
-        setError('Failed to load post.');
+        toast.error('Failed to load post');
+        navigate('/');
       } finally {
         setLoading(false);
       }
@@ -30,14 +31,20 @@ export default function EditPost() {
     setSubmitting(true);
     try {
       await api.put(`/posts/${id}`, data);
+      toast.success('Post updated!');
       navigate(`/posts/${id}`);
+    } catch (err) {
+      const msg = err.response?.data?.errors?.[0]?.msg
+               || err.response?.data?.message
+               || 'Failed to update post';
+      toast.error(msg);
+      throw err;
     } finally {
       setSubmitting(false);
     }
   };
 
   if (loading) return <Spinner />;
-  if (error)   return <div className="text-center py-20 text-red-500">{error}</div>;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
