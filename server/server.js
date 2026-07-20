@@ -14,9 +14,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// Routes — uncommented phase by phase
+// Routes
 app.use('/api/auth',  require('./routes/auth'));
 app.use('/api/posts', require('./routes/posts'));
+
+const { postCommentsRouter, commentsRouter } = require('./routes/comments');
+app.use('/api/posts/:postId/comments', postCommentsRouter);
+app.use('/api/comments', commentsRouter);
 
 // Global error handler
 app.use((err, req, res, next) => {

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import Spinner from '../components/Spinner';
+import CommentSection from '../components/CommentSection';
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -80,6 +81,8 @@ export default function PostDetail() {
           </button>
         </div>
       )}
+
+      <CommentSection postId={id} postAuthorUsername={post.author?.username} />
     </div>
   );
 }
