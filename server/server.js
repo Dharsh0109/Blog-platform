@@ -16,7 +16,7 @@ app.get('/api/health', (req, res) => {
 
 // Routes — uncommented phase by phase
 app.use('/api/auth',  require('./routes/auth'));
-// app.use('/api/posts', require('./routes/posts'));
+app.use('/api/posts', require('./routes/posts'));
 
 // Global error handler
 app.use((err, req, res, next) => {
